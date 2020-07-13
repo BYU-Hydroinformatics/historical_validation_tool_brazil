@@ -1,0 +1,108 @@
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+  display: block;
+  height: 0;
+  overflow-y: hidden;
+}
+
+.tab-content > .active,
+.pill-content > .active {
+  height: auto;
+}
+
+#headerCustomButtons {
+    margin-right: 15px;
+    margin-left: 15px;
+    width: 800px
+}
+
+#app-content-wrapper #app-content {
+  height: 100%;
+  /*padding-top: 60px;*/
+  /*padding-bottom: 50px;*/
+}
+
+#inner-app-content {
+  padding: 0;
+}
+
+#app-actions {
+  display: none;
+}
+
+#map {
+  height: 100%;
+}
+
+#graph {
+    height: 100%;
+}
+
+#obsgraph {
+    height: 100%;
+}
+
+#obsgraph .modal-body {
+  height: 100%;
+  border-radius: 0;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.chart {
+    min-width: 320px;
+    max-width: 800px;
+    height: 220px;
+    margin: 0 auto;
+}
+
+.flex-container-row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#overview {
+    font-size: 15pt;
+    padding: 0 20px 0 20px;
+}
+
+#about .modal-dialog {
+  width: 75%;
+  height: 75%;
+  padding: 0;
+}
+
+#about .modal-body {
+  height: 100%;
+  border-radius: 0;
+}
+
+#graph .modal-dialog {
+  width: 75%;
+  height: 75%;
+  padding: 0;
+}
+
+#obsgraph .modal-dialog {
+  width: 75%;
+  height: 75%;
+  padding: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.obslogos {
+    width: 40%;
+    padding: 0 5px 0 5px;
+}
+
+#Download_hydrographs{
+  display: flex;
+  flex-direction: row;
+}
