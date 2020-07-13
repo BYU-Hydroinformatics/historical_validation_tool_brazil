@@ -8,10 +8,10 @@ class HistoricalValidationToolBrazil(TethysAppBase):
 
     name = 'Historical Validation Tool Brazil'
     index = 'historical_validation_tool_brazil:home'
-    icon = 'historical_validation_tool_brazil/images/icon.gif'
+    icon = 'historical_validation_tool_brazil/images/historic_validation_brazil_logo.png'
     package = 'historical_validation_tool_brazil'
     root_url = 'historical-validation-tool-brazil'
-    color = '#F7D101'
+    color = '#009C3B'
     description = ''
     tags = 'Hydrology'
     enable_feedback = False
