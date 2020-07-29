@@ -4442,9 +4442,10 @@ def get_time_series(request):
         # Removing Negative Values
         forecast_df[forecast_df < 0] = 0
         # Getting forecast record
-        forecast_record = geoglows.streamflow.forecast_records(comid, return_format='csv')
-        forecast_ensembles = geoglows.streamflow.forecast_ensembles(comid)
-        hydroviewer_figure = geoglows.plots.hydroviewer(forecast_record, forecast_df, forecast_ensembles)
+        #forecast_record = geoglows.streamflow.forecast_records(comid, return_format='csv')
+        #forecast_ensembles = geoglows.streamflow.forecast_ensembles(comid)
+        #hydroviewer_figure = geoglows.plots.hydroviewer(forecast_record, forecast_df, forecast_ensembles)
+        hydroviewer_figure = geoglows.plots.forecast_stats(stats=forecast_df, titles={'Station': nomEstacion + '-' + str(codEstacion), 'Reach ID': comid})
 
         '''Getting real time observed data'''
         now = dt.datetime.now()
@@ -5218,15 +5219,16 @@ def get_time_series_bc(request):
         forecast_df[forecast_df < 0] = 0
 
         # Getting forecast record
-        forecast_record = geoglows.streamflow.forecast_records(comid, return_format='csv')
-        forecast_ensembles = geoglows.streamflow.forecast_ensembles(comid)
+        #forecast_record = geoglows.streamflow.forecast_records(comid, return_format='csv')
+        #forecast_ensembles = geoglows.streamflow.forecast_ensembles(comid)
 
         '''Correct Forecast'''
         fixed_stats = geoglows.bias.correct_forecast(forecast_df, simulated_df, observed_df)
-        fixed_records = geoglows.bias.correct_forecast(forecast_record, simulated_df, observed_df, use_month=-1)
-        fixed_ensembles = geoglows.bias.correct_forecast(forecast_ensembles, simulated_df, observed_df)
+        #fixed_records = geoglows.bias.correct_forecast(forecast_record, simulated_df, observed_df, use_month=-1)
+        #fixed_ensembles = geoglows.bias.correct_forecast(forecast_ensembles, simulated_df, observed_df)
 
-        hydroviewer_figure = geoglows.plots.hydroviewer(fixed_records, fixed_stats, fixed_ensembles)
+        #hydroviewer_figure = geoglows.plots.hydroviewer(fixed_records, fixed_stats, fixed_ensembles)
+        hydroviewer_figure = geoglows.plots.forecast_stats(stats=forecast_df, titles={'Station': nomEstacion + '-' + str(codEstacion), 'Reach ID': comid})
 
         '''Getting real time observed data'''
         now = dt.datetime.now()
@@ -5966,6 +5968,19 @@ def get_observed_discharge_csv(request):
 
         pairs = [list(a) for a in zip(daily_time, dischargeValues)]
         pairs = sorted(pairs, key=lambda x: x[0])
+
+        observed_df = pd.DataFrame(pairs, columns=['Datetime', 'Observed Streamflow'])
+        observed_df.set_index('Datetime', inplace=True)
+        observed_df = observed_df.replace(r'^\s*$', np.NaN, regex=True)
+        observed_df["Observed Streamflow"] = pd.to_numeric(observed_df["Observed Streamflow"], downcast="float")
+
+        observed_df[observed_df < 0] = 0
+
+        observed_df.index = observed_df.index.to_series().dt.strftime("%Y-%m-%d")
+
+        observed_df.index = pd.to_datetime(observed_df.index)
+
+        pairs = [list(a) for a in zip(observed_df.index, observed_df.iloc[:,0])]
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=observed_discharge_{0}.csv'.format(codEstacion)

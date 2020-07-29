@@ -8,8 +8,17 @@ requirements:
   skip: false
   conda:
     channels:
+      - conda-forge
     packages:
-
+      - geoglows>=0.18.1
+      - hydrostats
+      - pandas
+      - requests
+      - plotly
+      - numpy
+      - scipy
+      - bs4
+      - lxml
   pip:
 
 post:
