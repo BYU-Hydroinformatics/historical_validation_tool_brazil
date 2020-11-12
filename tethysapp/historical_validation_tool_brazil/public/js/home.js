@@ -938,7 +938,7 @@ $(document).ready(function(){
         let stationcode = arCode[1];
         let streamcomid = arComid[1];
 
-        let metrics_default = ["ME","RMSE","NRMSE (Mean)","MAPE","NSE","KGE (2009)", "KGE (2012)"];  // Default Metrics
+        let metrics_default = ["ME","RMSE","NRMSE (Mean)","MAPE","NSE","KGE (2009)", "KGE (2012)", "R (Pearson)", "R (Spearman)", "r2"];  // Default Metrics
         let selected_metrics = $( '#metric_select2' ).val();  // Selected Metrics
         let selected_metric_joined = arrayUnique(metrics_default.concat(selected_metrics));
 		let additionalParametersNameList = ["mase_m", "dmod_j", "nse_mod_j", "h6_k_MHE", "h6_k_AHE", "h6_k_RMSHE", "lm_x_bar", "d1_p_x_bar"];
@@ -983,7 +983,7 @@ $(document).ready(function(){
 });
 
 function makeDefaultTable(watershed, subbasin, streamcomid, stationcode, stationname){
-  let selected_metrics = ["ME","RMSE","NRMSE (Mean)","MAPE","NSE","KGE (2009)", "KGE (2012)"];  // Selected Metrics
+  let selected_metrics = ["ME","RMSE","NRMSE (Mean)","MAPE","NSE","KGE (2009)", "KGE (2012)", "R (Pearson)", "R (Spearman)", "r2"];  // Selected Metrics
   let additionalParametersNameList = ["mase_m", "dmod_j", "nse_mod_j", "h6_k_MHE", "h6_k_AHE", "h6_k_RMSHE", "lm_x_bar", "d1_p_x_bar"];
   let additionalParametersValuesList = [];
 
