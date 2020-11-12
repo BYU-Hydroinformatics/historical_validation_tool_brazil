@@ -777,29 +777,6 @@ function map_events() {
 
 
 function resize_graphs() {
-    $("#observedQ_tab_link").click(function() {
-        Plotly.Plots.resize($("#observed-chart-Q .js-plotly-plot")[0]);
-        Plotly.relayout($("#observed-chart-Q .js-plotly-plot")[0], {
-        	'xaxis.autorange': true,
-        	'yaxis.autorange': true
-        });
-    });
-    $("#simulatedQ_tab_link").click(function() {
-    	if (m_downloaded_historical_streamflow) {
-    		Plotly.Plots.resize($("#simulated-chart-Q .js-plotly-plot")[0]);
-    		Plotly.relayout($("#simulated-chart-Q .js-plotly-plot")[0], {
-        		'xaxis.autorange': true,
-        		'yaxis.autorange': true
-        	});
-    	}
-    });
-    $("#simulated_bc_Q_tab_link").click(function() {
-    	Plotly.Plots.resize($("#simulated-bc-chart-Q .js-plotly-plot")[0]);
-    	Plotly.relayout($("#simulated-bc-chart-Q .js-plotly-plot")[0], {
-        	'xaxis.autorange': true,
-        	'yaxis.autorange': true
-        });
-    });
     $("#hydrographs_tab_link").click(function() {
     	Plotly.Plots.resize($("#hydrographs-chart .js-plotly-plot")[0]);
     	Plotly.relayout($("#hydrographs-chart .js-plotly-plot")[0], {
@@ -807,36 +784,28 @@ function resize_graphs() {
         	'yaxis.autorange': true
         });
     });
-    $("#dailyAverages_tab_link").click(function() {
+    $("#visualAnalysis_tab_link").click(function() {
     	Plotly.Plots.resize($("#dailyAverages-chart .js-plotly-plot")[0]);
     	Plotly.relayout($("#dailyAverages-chart .js-plotly-plot")[0], {
         	'xaxis.autorange': true,
         	'yaxis.autorange': true
         });
-    });
-    $("#monthlyAverages_tab_link").click(function() {
-    	Plotly.Plots.resize($("#monthlyAverages-chart .js-plotly-plot")[0]);
+        Plotly.Plots.resize($("#monthlyAverages-chart .js-plotly-plot")[0]);
     	Plotly.relayout($("#monthlyAverages-chart .js-plotly-plot")[0], {
         	'xaxis.autorange': true,
         	'yaxis.autorange': true
         });
-    });
-    $("#scatterPlot_tab_link").click(function() {
-    	Plotly.Plots.resize($("#scatterPlot-chart .js-plotly-plot")[0]);
+        Plotly.Plots.resize($("#scatterPlot-chart .js-plotly-plot")[0]);
     	Plotly.relayout($("#scatterPlot-chart .js-plotly-plot")[0], {
         	'xaxis.autorange': true,
         	'yaxis.autorange': true
         });
-    });
-    $("#scatterPlotLogScale_tab_link").click(function() {
-    	Plotly.Plots.resize($("#scatterPlotLogScale-chart .js-plotly-plot")[0]);
+        Plotly.Plots.resize($("#scatterPlotLogScale-chart .js-plotly-plot")[0]);
     	Plotly.relayout($("#scatterPlotLogScale-chart .js-plotly-plot")[0], {
         	'xaxis.autorange': true,
         	'yaxis.autorange': true
         });
-    });
-    $("#volumeAnalysis_tab_link").click(function() {
-    	Plotly.Plots.resize($("#volumeAnalysis-chart .js-plotly-plot")[0]);
+        Plotly.Plots.resize($("#volumeAnalysis-chart .js-plotly-plot")[0]);
     	Plotly.relayout($("#volumeAnalysis-chart .js-plotly-plot")[0], {
         	'xaxis.autorange': true,
         	'yaxis.autorange': true
@@ -848,8 +817,6 @@ function resize_graphs() {
         	'xaxis.autorange': true,
         	'yaxis.autorange': true
         });
-    });
-    $("#forecast_bc_tab_link").click(function() {
         Plotly.Plots.resize($("#forecast-bc-chart .js-plotly-plot")[0]);
         Plotly.relayout($("#forecast-bc-chart .js-plotly-plot")[0], {
         	'xaxis.autorange': true,
