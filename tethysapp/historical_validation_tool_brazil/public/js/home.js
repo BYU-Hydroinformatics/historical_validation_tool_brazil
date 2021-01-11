@@ -606,8 +606,6 @@ function map_events() {
 	});
 }
 
-
-
 function resize_graphs() {
     $("#hydrographs_tab_link").click(function() {
     	Plotly.Plots.resize($("#hydrographs-chart .js-plotly-plot")[0]);
