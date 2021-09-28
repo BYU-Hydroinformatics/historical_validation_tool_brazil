@@ -1,5 +1,6 @@
 import datetime as dt
 import io
+import os
 import traceback
 from csv import writer as csv_writer
 
@@ -13,12 +14,20 @@ import pandas as pd
 import plotly.graph_objs as go
 import requests
 import math
+import xmltodict
+import pytz
+import json
 import scipy.stats as sp
+from dateutil.relativedelta import relativedelta
 from scipy import integrate
 from HydroErr.HydroErr import metric_names, metric_abbr
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from tethys_sdk.gizmos import PlotlyView
+from tethys_sdk.gizmos import *
+
+from .app import HistoricalValidationToolBrazil as app
+
+import time
 
 ## global values ##
 watershed = 'none'
@@ -48,16 +57,78 @@ def home(request):
     # List of Metrics to include in context
     metric_loop_list = list(zip(metric_names, metric_abbr))
 
+    # Retrieve a geoserver engine and geoserver credentials.
+    geoserver_engine = app.get_spatial_dataset_service(
+        name='main_geoserver', as_engine=True)
+
+    geos_username = geoserver_engine.username
+    geos_password = geoserver_engine.password
+    my_geoserver = geoserver_engine.endpoint.replace('rest', '')
+
+    geoserver_base_url = my_geoserver
+    geoserver_workspace = app.get_custom_setting('workspace')
+    region = app.get_custom_setting('region')
+    geoserver_endpoint = TextInput(display_text='',
+                                   initial=json.dumps([geoserver_base_url, geoserver_workspace, region]),
+                                   name='geoserver_endpoint',
+                                   disabled=True)
+
+    # Available Forecast Dates
+    res = requests.get('https://geoglows.ecmwf.int/api/AvailableDates/?region=central_america-geoglows', verify=False)
+    data = res.json()
+    dates_array = (data.get('available_dates'))
+
+    dates = []
+
+    for date in dates_array:
+        if len(date) == 10:
+            date_mod = date + '000'
+            date_f = dt.datetime.strptime(date_mod, '%Y%m%d.%H%M').strftime('%Y-%m-%d %H:%M')
+        else:
+            date_f = dt.datetime.strptime(date, '%Y%m%d.%H%M').strftime('%Y-%m-%d')
+            date = date[:-3]
+        dates.append([date_f, date])
+        dates = sorted(dates)
+
+    dates.append(['Select Date', dates[-1][1]])
+    dates.reverse()
+
+    # Date Picker Options
+    date_picker = DatePicker(name='datesSelect',
+                             display_text='Date',
+                             autoclose=True,
+                             format='yyyy-mm-dd',
+                             start_date=dates[-1][0],
+                             end_date=dates[1][0],
+                             start_view='month',
+                             today_button=True,
+                             initial='')
+
+    region_index = json.load(open(os.path.join(os.path.dirname(__file__), 'public', 'geojson', 'index.json')))
+    regions = SelectInput(
+        display_text='Zoom to a Region:',
+        name='regions',
+        multiple=False,
+        original=True,
+        options=[(region_index[opt]['name'], opt) for opt in region_index]
+    )
+
     context = {
-        "metric_loop_list": metric_loop_list
+        "metric_loop_list": metric_loop_list,
+        "geoserver_endpoint": geoserver_endpoint,
+        "date_picker": date_picker,
+        "regions": regions
     }
 
     return render(request, 'historical_validation_tool_brazil/home.html', context)
 
+
 def get_popup_response(request):
     """
-	Get simulated data from api
-	"""
+    Get simulated data from api
+    """
+
+    start_time = time.time()
 
     get_data = request.GET
     return_obj = {}
@@ -492,6 +563,9 @@ def get_popup_response(request):
             print('There is no forecast record')
 
         print("finished get_popup_response")
+
+        print("--- %s seconds getpopup ---" % (time.time() - start_time))
+
         return JsonResponse({})
 
     except Exception as e:
@@ -511,6 +585,8 @@ def get_hydrographs(request):
     global observed_df
     global corrected_df
 
+    start_time = time.time()
+
     try:
 
         '''Plotting Data'''
@@ -528,6 +604,8 @@ def get_hydrographs(request):
         context = {
             'gizmo_object': chart_obj,
         }
+
+        print("--- %s seconds hydrographs ---" % (time.time() - start_time))
 
         return render(request, 'historical_validation_tool_brazil/gizmo_ajax.html', context)
 
@@ -547,6 +625,8 @@ def get_dailyAverages(request):
     global simulated_df
     global observed_df
     global corrected_df
+
+    start_time = time.time()
 
     try:
 
@@ -580,6 +660,8 @@ def get_dailyAverages(request):
             'gizmo_object': chart_obj,
         }
 
+        print("--- %s seconds dailyAverages ---" % (time.time() - start_time))
+
         return render(request, 'historical_validation_tool_brazil/gizmo_ajax.html', context)
 
     except Exception as e:
@@ -598,6 +680,8 @@ def get_monthlyAverages(request):
     global simulated_df
     global observed_df
     global corrected_df
+
+    start_time = time.time()
 
     try:
 
@@ -632,6 +716,8 @@ def get_monthlyAverages(request):
             'gizmo_object': chart_obj,
         }
 
+        print("--- %s seconds monthlyAverages ---" % (time.time() - start_time))
+
         return render(request, 'historical_validation_tool_brazil/gizmo_ajax.html', context)
 
     except Exception as e:
@@ -650,6 +736,8 @@ def get_scatterPlot(request):
     global simulated_df
     global observed_df
     global corrected_df
+
+    start_time = time.time()
 
     try:
         watershed = get_data['watershed']
@@ -729,6 +817,8 @@ def get_scatterPlot(request):
             'gizmo_object': chart_obj,
         }
 
+        print("--- %s seconds scatterPlot ---" % (time.time() - start_time))
+
         return render(request, 'historical_validation_tool_brazil/gizmo_ajax.html', context)
 
     except Exception as e:
@@ -742,6 +832,8 @@ def get_scatterPlotLogScale(request):
     Get historic simulations from ERA Interim
     """
     get_data = request.GET
+
+    start_time = time.time()
 
     try:
 
@@ -790,6 +882,8 @@ def get_scatterPlotLogScale(request):
             'gizmo_object': chart_obj,
         }
 
+        print("--- %s seconds scatterPlot_log ---" % (time.time() - start_time))
+
         return render(request, 'historical_validation_tool_brazil/gizmo_ajax.html', context)
 
     except Exception as e:
@@ -808,6 +902,8 @@ def get_volumeAnalysis(request):
     global simulated_df
     global observed_df
     global corrected_df
+
+    start_time = time.time()
 
     try:
 
@@ -863,6 +959,8 @@ def get_volumeAnalysis(request):
             'gizmo_object': chart_obj,
         }
 
+        print("--- %s seconds volumeAnalysis ---" % (time.time() - start_time))
+
         return render(request, 'historical_validation_tool_brazil/gizmo_ajax.html', context)
 
     except Exception as e:
@@ -877,6 +975,8 @@ def volume_table_ajax(request):
     global simulated_df
     global observed_df
     global corrected_df
+
+    start_time = time.time()
 
     try:
 
@@ -902,6 +1002,8 @@ def volume_table_ajax(request):
             "corr_volume": corr_volume,
         }
 
+        print("--- %s seconds volumeAnalysis_table ---" % (time.time() - start_time))
+
         return JsonResponse(resp)
 
     except Exception as e:
@@ -914,6 +1016,8 @@ def make_table_ajax(request):
     global simulated_df
     global observed_df
     global corrected_df
+
+    start_time = time.time()
 
     try:
 
@@ -1039,6 +1143,8 @@ def make_table_ajax(request):
         table_final_html = table_final.to_html(classes="table table-hover table-striped",
                                                table_id="corrected_1").replace('border="1"', 'border="0"')
 
+        print("--- %s seconds metrics_table ---" % (time.time() - start_time))
+
         return HttpResponse(table_final_html)
 
     except Exception:
@@ -1064,11 +1170,15 @@ def get_time_series(request):
     global observed_df
     global forecast_df
     global forecast_record
+
+    start_time = time.time()
+
     try:
 
         hydroviewer_figure = geoglows.plots.forecast_stats(stats=forecast_df, titles={'Station': nomEstacion + '-' + str(codEstacion), 'Reach ID': comid})
 
-        x_vals = (forecast_df.index[0], forecast_df.index[len(forecast_df.index) - 1], forecast_df.index[len(forecast_df.index) - 1], forecast_df.index[0])
+        x_vals = (forecast_df.index[0], forecast_df.index[len(forecast_df.index) - 1],
+                  forecast_df.index[len(forecast_df.index) - 1], forecast_df.index[0])
         max_visible = max(forecast_df.max())
 
         '''Getting forecast record'''
@@ -1086,29 +1196,80 @@ def get_time_series(request):
                 ))
 
             if 'x_vals' in locals():
-                x_vals = (forecast_record.index[0], forecast_df.index[len(forecast_df.index) - 1], forecast_df.index[len(forecast_df.index) - 1], forecast_record.index[0])
+                x_vals = (forecast_record.index[0], forecast_df.index[len(forecast_df.index) - 1],
+                          forecast_df.index[len(forecast_df.index) - 1], forecast_record.index[0])
             else:
-                x_vals = (forecast_record.index[0], forecast_df.index[len(forecast_df.index) - 1], forecast_df.index[len(forecast_df.index) - 1], forecast_record.index[0])
+                x_vals = (forecast_record.index[0], forecast_df.index[len(forecast_df.index) - 1],
+                          forecast_df.index[len(forecast_df.index) - 1], forecast_record.index[0])
                 max_visible = max(forecast_record.max(), max_visible)
 
         except:
-            print('Not forecast record for the selected station')
+            print('There is no forecast record')
 
 
         '''Getting real time observed data'''
 
         try:
 
-            observed_rt = observed_df.copy()
-            observed_rt[observed_rt < 0] = 0
-            observed_rt.index = observed_rt.index.to_series().dt.strftime("%Y-%m-%d")
-            observed_rt.index = pd.to_datetime(observed_rt.index)
+            tz = pytz.timezone('Brazil/East')
+            hoy = dt.datetime.now(tz)
+            ini_date = hoy - relativedelta(months=7)
 
-            observed_rt = observed_rt.dropna()
-            observed_rt = observed_rt.groupby(observed_rt.index.strftime("%Y/%m/%d")).mean()
+            anyo = hoy.year
+            mes = hoy.month
+            dia = hoy.day
+
+            if dia < 10:
+                DD = '0' + str(dia)
+            else:
+                DD = str(dia)
+
+            if mes < 10:
+                MM = '0' + str(mes)
+            else:
+                MM = str(mes)
+
+            YYYY = str(anyo)
+
+            ini_anyo = ini_date.year
+            ini_mes = ini_date.month
+            ini_dia = ini_date.day
+
+            if ini_dia < 10:
+                ini_DD = '0' + str(ini_dia)
+            else:
+                ini_DD = str(ini_dia)
+
+            if ini_mes < 10:
+                ini_MM = '0' + str(ini_mes)
+            else:
+                ini_MM = str(ini_mes)
+
+            ini_YYYY = str(ini_anyo)
+
+            url = 'http://telemetriaws1.ana.gov.br/ServiceANA.asmx/DadosHidrometeorologicos?codEstacao={0}&DataInicio={1}/{2}/{3}&DataFim={4}/{5}/{6}'.format(codEstacion, ini_DD, ini_MM, ini_YYYY, DD, MM, YYYY)
+            datos = requests.get(url).content
+            sites_dict = xmltodict.parse(datos)
+            sites_json_object = json.dumps(sites_dict)
+            sites_json = json.loads(sites_json_object)
+
+            datos_c = sites_json["DataTable"]["diffgr:diffgram"]["DocumentElement"]["DadosHidrometereologicos"]
+
+            list_val_vazao = []
+            list_date_vazao = []
+
+            for dat in datos_c:
+                list_val_vazao.append(dat["Vazao"])
+                list_date_vazao.append(dat["DataHora"])
+
+            pairs = [list(a) for a in zip(list_date_vazao, list_val_vazao)]
+            observed_rt = pd.DataFrame(pairs, columns=['Datetime', 'Streamflow (m3/s)'])
+            observed_rt.set_index('Datetime', inplace=True)
             observed_rt.index = pd.to_datetime(observed_rt.index)
+            observed_rt.dropna(inplace=True)
+
             observed_rt.index = observed_rt.index.tz_localize('UTC')
-            observed_rt = observed_rt.loc[observed_rt.index >= pd.to_datetime(forecast_df.index[0] - dt.timedelta(days=7))]
+            observed_rt = observed_rt.loc[observed_rt.index >= pd.to_datetime(forecast_df.index[0] - dt.timedelta(days=8))]
             observed_rt = observed_rt.dropna()
 
             if len(observed_rt.index) > 0:
@@ -1145,7 +1306,7 @@ def get_time_series(request):
                 '25 Year': 'rgba(255, 0, 0, .4)',
                 '50 Year': 'rgba(128, 0, 106, .4)',
                 '100 Year': 'rgba(128, 0, 246, .4)',
-			}
+            }
 
             if max_visible > r2:
                 visible = True
@@ -1185,7 +1346,6 @@ def get_time_series(request):
         except:
             print('There is no return periods for the desired stream')
 
-
         chart_obj = PlotlyView(hydroviewer_figure)
 
         context = {
@@ -1212,7 +1372,7 @@ def get_time_series_bc(request):
 
     try:
 
-        hydroviewer_figure = geoglows.plots.forecast_stats(stats=forecast_df, titles={'Station': nomEstacion + '-' + str(codEstacion), 'Reach ID': comid, 'bias_corrected': True})
+        hydroviewer_figure = geoglows.plots.forecast_stats(stats=fixed_stats, titles={'Station': nomEstacion + '-' + str(codEstacion), 'Reach ID': comid, 'bias_corrected': True})
 
         x_vals = (fixed_stats.index[0], fixed_stats.index[len(fixed_stats.index) - 1], fixed_stats.index[len(fixed_stats.index) - 1], fixed_stats.index[0])
         max_visible = max(fixed_stats.max())
@@ -1244,14 +1404,63 @@ def get_time_series_bc(request):
 
         try:
 
-            observed_rt = observed_df.copy()
-            observed_rt[observed_rt < 0] = 0
-            observed_rt.index = observed_rt.index.to_series().dt.strftime("%Y-%m-%d")
-            observed_rt.index = pd.to_datetime(observed_rt.index)
+            tz = pytz.timezone('Brazil/East')
+            hoy = dt.datetime.now(tz)
+            ini_date = hoy - relativedelta(months=7)
 
-            observed_rt = observed_rt.dropna()
-            observed_rt = observed_rt.groupby(observed_rt.index.strftime("%Y/%m/%d")).mean()
+            anyo = hoy.year
+            mes = hoy.month
+            dia = hoy.day
+
+            if dia < 10:
+                DD = '0' + str(dia)
+            else:
+                DD = str(dia)
+
+            if mes < 10:
+                MM = '0' + str(mes)
+            else:
+                MM = str(mes)
+
+            YYYY = str(anyo)
+
+            ini_anyo = ini_date.year
+            ini_mes = ini_date.month
+            ini_dia = ini_date.day
+
+            if ini_dia < 10:
+                ini_DD = '0' + str(ini_dia)
+            else:
+                ini_DD = str(ini_dia)
+
+            if ini_mes < 10:
+                ini_MM = '0' + str(ini_mes)
+            else:
+                ini_MM = str(ini_mes)
+
+            ini_YYYY = str(ini_anyo)
+
+            url = 'http://telemetriaws1.ana.gov.br/ServiceANA.asmx/DadosHidrometeorologicos?codEstacao={0}&DataInicio={1}/{2}/{3}&DataFim={4}/{5}/{6}'.format(codEstacion, ini_DD, ini_MM, ini_YYYY, DD, MM, YYYY)
+            datos = requests.get(url).content
+            sites_dict = xmltodict.parse(datos)
+            sites_json_object = json.dumps(sites_dict)
+            sites_json = json.loads(sites_json_object)
+
+            datos_c = sites_json["DataTable"]["diffgr:diffgram"]["DocumentElement"]["DadosHidrometereologicos"]
+
+            list_val_vazao = []
+            list_date_vazao = []
+
+            for dat in datos_c:
+                list_val_vazao.append(dat["Vazao"])
+                list_date_vazao.append(dat["DataHora"])
+
+            pairs = [list(a) for a in zip(list_date_vazao, list_val_vazao)]
+            observed_rt = pd.DataFrame(pairs, columns=['Datetime', 'Streamflow (m3/s)'])
+            observed_rt.set_index('Datetime', inplace=True)
             observed_rt.index = pd.to_datetime(observed_rt.index)
+            observed_rt.dropna(inplace=True)
+
             observed_rt.index = observed_rt.index.tz_localize('UTC')
             observed_rt = observed_rt.loc[observed_rt.index >= pd.to_datetime(forecast_df.index[0] - dt.timedelta(days=7))]
             observed_rt = observed_rt.dropna()
@@ -1266,11 +1475,10 @@ def get_time_series_bc(request):
                     )
                 ))
 
-            if 'fixed_records' in locals():
+            if 'forecast_record' in locals():
                 x_vals = x_vals
             else:
-                x_vals = (observed_rt.index[0], fixed_stats.index[len(fixed_stats.index) - 1],
-                          fixed_stats.index[len(fixed_stats.index) - 1], observed_rt.index[0])
+                x_vals = (observed_rt.index[0], forecast_df.index[len(forecast_df.index) - 1], forecast_df.index[len(forecast_df.index) - 1], observed_rt.index[0])
 
             max_visible = max(observed_rt.max(), max_visible)
 
@@ -1286,15 +1494,15 @@ def get_time_series_bc(request):
 
         def gumbel_1(std: float, xbar: float, rp: int or float) -> float:
             """
-			Solves the Gumbel Type I probability distribution function (pdf) = exp(-exp(-b)) where b is the covariate. Provide
-			the standard deviation and mean of the list of annual maximum flows. Compare scipy.stats.gumbel_r
-			Args:
-				std (float): the standard deviation of the series
-				xbar (float): the mean of the series
-				rp (int or float): the return period in years
-			Returns:
-				float, the flow corresponding to the return period specified
-			"""
+            Solves the Gumbel Type I probability distribution function (pdf) = exp(-exp(-b)) where b is the covariate. Provide
+            the standard deviation and mean of the list of annual maximum flows. Compare scipy.stats.gumbel_r
+            Args:
+                std (float): the standard deviation of the series
+                xbar (float): the mean of the series
+                rp (int or float): the return period in years
+            Returns:
+                float, the flow corresponding to the return period specified
+            """
             # xbar = statistics.mean(year_max_flow_list)
             # std = statistics.stdev(year_max_flow_list, xbar=xbar)
             return -math.log(-math.log(1 - (1 / rp))) * std * .7797 + xbar - (.45 * std)
@@ -1366,6 +1574,38 @@ def get_time_series_bc(request):
     except Exception as e:
         print(str(e))
         return JsonResponse({'error': 'No data found for the selected reach.'})
+
+
+def get_available_dates(request):
+    get_data = request.GET
+
+    global watershed
+    global subbasin
+    global comid
+    res = requests.get('https://geoglows.ecmwf.int/api/AvailableDates/?region=' + watershed + '-' + subbasin, verify=False)
+
+    data = res.json()
+
+    dates_array = (data.get('available_dates'))
+
+    dates = []
+
+    for date in dates_array:
+        if len(date) == 10:
+            date_mod = date + '000'
+            date_f = dt.datetime.strptime(date_mod, '%Y%m%d.%H%M').strftime('%Y-%m-%d %H:%M')
+        else:
+            date_f = dt.datetime.strptime(date, '%Y%m%d.%H%M').strftime('%Y-%m-%d')
+            date = date[:-3]
+        dates.append([date_f, date, watershed, subbasin, comid])
+
+    dates.append(['Select Date', dates[-1][1]])
+    dates.reverse()
+
+    return JsonResponse({
+        "success": "Data analysis complete!",
+        "available_dates": json.dumps(dates)
+    })
 
 
 def get_observed_discharge_csv(request):

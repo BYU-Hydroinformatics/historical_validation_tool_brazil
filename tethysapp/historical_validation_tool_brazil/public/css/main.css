@@ -38,6 +38,19 @@
     height: 100%;
 }
 
+.map-view-legend {
+  bottom: 50px;
+  /*right: 20px;*/
+  width: 150px;
+  max-height: 90%;
+  overflow-y: auto;
+  margin: 5px;
+  color: white;
+  background: #286090;
+  border: 1px #ddd solid;
+  z-index: 999;
+}
+
 #obsgraph {
     height: 100%;
 }

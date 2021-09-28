@@ -55,9 +55,24 @@ $.ajaxSetup({
 var feature_layer;
 var current_layer;
 var map;
+var wmsLayer;
+var wmsLayer2;
 
 let $loading = $('#view-file-loading');
 var m_downloaded_historical_streamflow = false;
+
+function toggleAcc(layerID) {
+    let layer = wms_layers[layerID];
+    if (document.getElementById(`wmsToggle${layerID}`).checked) {
+        // Turn the layer and legend on
+        layer.setVisible(true);
+        $("#wmslegend" + layerID).show(200);
+    } else {
+        layer.setVisible(false);
+        $("#wmslegend" + layerID).hide(200);
+
+    }
+}
 
 function init_map() {
 
@@ -71,7 +86,7 @@ function init_map() {
 
 	var streams = new ol.layer.Image({
 		source: new ol.source.ImageWMS({
-			url: 'https://tethys2.byu.edu/geoserver/brazil_hydroviewer/wms',
+			url: JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wms',
 			params: { 'LAYERS': 'south_america-brazil-geoglows-drainage_line' },
 			serverType: 'geoserver',
 			crossOrigin: 'Anonymous'
@@ -79,14 +94,18 @@ function init_map() {
 		opacity: 0.5
 	});
 
+	wmsLayer = streams;
+
 	var stations = new ol.layer.Image({
 		source: new ol.source.ImageWMS({
-			url: 'https://tethys2.byu.edu/geoserver/brazil_hydroviewer/wms',
+			url: JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wms',
 			params: { 'LAYERS': 'Brazil_Stations' },
 			serverType: 'geoserver',
 			crossOrigin: 'Anonymous'
 		})
 	});
+
+	wmsLayer2 = stations;
 
 	feature_layer = stations;
 
@@ -101,7 +120,7 @@ function init_map() {
 
 }
 
-let ajax_url = 'https://tethys2.byu.edu/geoserver/brazil_hydroviewer/wfs?request=GetCapabilities';
+let ajax_url = JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wfs?request=GetCapabilities';
 
 let capabilities = $.ajax(ajax_url, {
 	type: 'GET',
@@ -669,7 +688,67 @@ $(function() {
     map_events();
     resize_graphs();
 
+    $('#datesSelect').change(function() { //when date is changed
+
+        //var sel_val = ($('#datesSelect option:selected').val()).split(',');
+        sel_val = $("#datesSelect").val()
+
+        //var startdate = sel_val[0];
+        var startdate = sel_val;
+        startdate = startdate.replace("-","");
+        startdate = startdate.replace("-","");
+
+        $loading.removeClass('hidden');
+        get_time_series(watershed, subbasin, streamcomid, stationcode, stationname, startdate);
+        get_time_series_bc(watershed, subbasin, streamcomid, stationcode, stationname, startdate);
+    });
+
 });
+
+function getRegionGeoJsons() {
+
+    let geojsons = region_index[$("#regions").val()]['geojsons'];
+    for (let i in geojsons) {
+        var regionsSource = new ol.source.Vector({
+           url: staticGeoJSON + geojsons[i],
+           format: new ol.format.GeoJSON()
+        });
+
+        var regionStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'red',
+                width: 3
+            })
+        });
+
+        var regionsLayer = new ol.layer.Vector({
+            name: 'myRegion',
+            source: regionsSource,
+            style: regionStyle
+        });
+
+        map.getLayers().forEach(function(regionsLayer) {
+        if (regionsLayer.get('name')=='myRegion')
+            map.removeLayer(regionsLayer);
+        });
+        map.addLayer(regionsLayer)
+
+        setTimeout(function() {
+            var myExtent = regionsLayer.getSource().getExtent();
+            map.getView().fit(myExtent, map.getSize());
+        }, 500);
+    }
+}
+
+$('#stp-stream-toggle').on('change', function() {
+    wmsLayer.setVisible($('#stp-stream-toggle').prop('checked'))
+})
+$('#stp-stations-toggle').on('change', function() {
+    wmsLayer2.setVisible($('#stp-stations-toggle').prop('checked'))
+})
+
+// Regions gizmo listener
+$('#regions').change(function() {getRegionGeoJsons()});
 
 // Function for the select2 metric selection tool
 $(document).ready(function() {
@@ -854,6 +933,36 @@ function makeDefaultTable(watershed, subbasin, streamcomid, stationcode, station
       console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
     }
   });
+}
+
+function get_available_dates(watershed, subbasin, comid) {
+    $.ajax({
+    	type: 'GET',
+        url: 'get-available-dates/',
+        dataType: 'json',
+        data: {
+            'watershed': watershed,
+            'subbasin': subbasin,
+            'comid': comid
+        },
+        error: function() {
+            $('#dates').html(
+                '<p class="alert alert-danger" style="text-align: center"><strong>An error occurred while retrieving the available dates</strong></p>'
+            );
+
+            setTimeout(function() {
+                // $('#dates').addClass('hidden')
+            }, 5000);
+        },
+        success: function(dates) {
+            datesParsed = JSON.parse(dates.available_dates);
+            $('#datesSelect').empty();
+            $.each(datesParsed, function(i, p) {
+                var val_str = p.slice(1).join();
+                $('#datesSelect').append($('<option></option>').val(val_str).html(p[0]));
+            });
+        }
+    });
 }
 
 function get_time_series(watershed, subbasin, streamcomid, stationcode, stationname) {

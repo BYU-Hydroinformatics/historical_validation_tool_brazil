@@ -1,5 +1,5 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
-
+from tethys_sdk.app_settings import CustomSetting, SpatialDatasetServiceSetting
 
 class HistoricalValidationToolBrazil(TethysAppBase):
     """
@@ -12,10 +12,23 @@ class HistoricalValidationToolBrazil(TethysAppBase):
     package = 'historical_validation_tool_brazil'
     root_url = 'historical-validation-tool-brazil'
     color = '#009C3B'
-    description = 'This app evaluates the accuracy for the historical streamflow values obtained from Streamflow Prediction Tool in Brazil.'
-    tags = '"Hydrology", "Time Series", "Bias Correction", "Hydrostats", "GEOGloWS", "Historical Validation Tool"'
+    description = 'This app combines the observed data and the simulated data from the GEOGloWS ECMWF Streaamflow Services in Brazil.'
+    tags = '"Hydrology", "Time Series", "Bias Correction", "Hydrostats", "GEOGloWS", "Historical Validation Tool", "Brazil"'
     enable_feedback = False
     feedback_emails = []
+
+    def spatial_dataset_service_settings(self):
+        """
+		Spatial_dataset_service_settings method.
+		"""
+        return (
+            SpatialDatasetServiceSetting(
+                name='main_geoserver',
+                description='spatial dataset service for app to use (https://tethys2.byu.edu/geoserver/rest/)',
+                engine=SpatialDatasetServiceSetting.GEOSERVER,
+                required=True,
+            ),
+        )
 
     def url_maps(self):
         """
@@ -65,6 +78,10 @@ class HistoricalValidationToolBrazil(TethysAppBase):
                 url='make-table-ajax',
                 controller='historical_validation_tool_brazil.controllers.make_table_ajax'),
             UrlMap(
+                name='get-available-dates',
+                url='ecmwf-rapid/get-available-dates',
+                controller='historical_validation_tool_brazil.controllers.get_available_dates'),
+            UrlMap(
                 name='get-time-series',
                 url='get-time-series',
                 controller='historical_validation_tool_brazil.controllers.get_time_series'),
@@ -95,3 +112,21 @@ class HistoricalValidationToolBrazil(TethysAppBase):
         )
 
         return url_maps
+
+    def custom_settings(self):
+        return (
+            CustomSetting(
+                name='workspace',
+                type=CustomSetting.TYPE_STRING,
+                description='Workspace within Geoserver where web service is',
+                required=True,
+                default='brazil_hydroviewer',
+            ),
+            CustomSetting(
+                name='region',
+                type=CustomSetting.TYPE_STRING,
+                description='GESS Region',
+                required=True,
+                default='south_america-geoglows',
+            ),
+        )

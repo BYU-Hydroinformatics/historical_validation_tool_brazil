@@ -8,10 +8,33 @@
 {% endblock %}
 
 {% block app_content %}
-  <div id="map" class="map"></div>
+  <div id="map" class="map">
+    <div id="map-view-legend" class="map-view-legend ol-unselectable ol-control">
+      <div>
+        <svg width="20" height="20" viewPort="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="19 1, 1 6, 19 14, 1 19" stroke="#0000FF" fill="transparent" stroke-width="2"/>
+        </svg>
+        Streams <input id="stp-stream-toggle" class="toggle-layer" type="checkbox" checked data-toggle="toggle" data-size="mini">
+      </div>
+      <div>
+        <svg width="20" height="20" viewPort="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="0 10, 0 0, 10 0, 10 10, 0 10" stroke="rgba(255,0,0,1)" fill="rgba(255,0,0,1)" stroke-width="2"/>
+        </svg>
+        Stations <input id="stp-stations-toggle" class="toggle-layer" type="checkbox" checked data-toggle="toggle" data-size="mini">
+      </div>
+      <div>
+        <br>
+        {% gizmo select_input regions %}
+      </div>
+    </div>
+  </div>
+  <img id="featureLoader" style="display: none; position:fixed; z-index: 100; left : 0; bottom : 0; right : 0; top : 0; margin:auto;" src="{% static 'historical_validation_tool_brazil/images/loader2.gif' %}">
 {% endblock %}
 
 {% block header_buttons %}
+  <div class="hidden" style="margin-right: 15px;">
+    {% gizmo text_input geoserver_endpoint %}
+  </div>
   <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="View Graph">
     <a data-toggle="modal" data-target="#obsgraph"><span class="glyphicon glyphicon-globe"></span></a>
   </div>
@@ -36,6 +59,7 @@
                 <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/byu_logo.png' %}">
                 <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/ANA_Logo.jpeg' %}">
                 <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/logo_cemaden.jpg' %}">
+                <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/Servir_logo.jpeg' %}">
               </div>
             </div>
             <div id="interaction"></div>
