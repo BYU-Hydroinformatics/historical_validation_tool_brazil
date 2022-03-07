@@ -218,14 +218,24 @@
                       <span class="glyphicon glyphicon-play"></span> Download Forecast
                     </a>
                   </div>
+                  <div id="download_forecast_ensemble" class="btn-group hidden" role="group">
+                    <a class="btn btn-success" role="button" id="submit-download-forecast-ensemble">
+                      <span class="glyphicon glyphicon-play"></span> Download Forecast Ensemble
+                    </a>
+                  </div>
                   <!--<div id="dates" class="hidden form-group" style="padding: 30px 30px 20px 0">-->
                     <!--<select id="datesSelect" class="form-control"></select>-->
                   <!--</div>-->
                   <div class="flex-container-row"><img id="forecast-bc-loading" class="view-file hidden" src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}" /></div>
                   <div id="forecast-bc-chart"></div>
                   <div id="download_forecast_bc" class="btn-group hidden long-term-select" role="group">
-                    <a class="btn btn-success" role="button" id="submit-download-forecast-bc">
+                    <a class="btn btn-info" role="button" id="submit-download-forecast-bc">
                       <span class="glyphicon glyphicon-play"></span> Download Corrected Forecast
+                    </a>
+                  </div>
+                  <div id="download_forecast_ensemble_bc" class="btn-group hidden" role="group">
+                    <a class="btn btn-success" role="button" id="submit-download-forecast-bc-ensemble">
+                      <span class="glyphicon glyphicon-play"></span> Download Corrected Forecast Ensemble
                     </a>
                   </div>
                 </div>
