@@ -676,7 +676,7 @@ def get_dailyAverages(request):
 		print("error: " + str(e))
 		print("line: " + str(exc_tb.tb_lineno))
 		return JsonResponse({
-			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno), "sim_ini: " + str(simulated_df.index[0]), "sim_end: " + str(simulated_df.index[-1]), "obs_ini: " + str(observed_df.index[0]), "obs_end: " + str(observed_df.index[-1])}',
+			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
 		})
 
 
@@ -754,7 +754,7 @@ def get_monthlyAverages(request):
 		print("error: " + str(e))
 		print("line: " + str(exc_tb.tb_lineno))
 		return JsonResponse({
-			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno), "sim_ini: " + str(simulated_df.index[0]), "sim_end: " + str(simulated_df.index[-1]), "obs_ini: " + str(observed_df.index[0]), "obs_end: " + str(observed_df.index[-1])}',
+			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
 		})
 
 
@@ -872,7 +872,7 @@ def get_scatterPlot(request):
 		print("error: " + str(e))
 		print("line: " + str(exc_tb.tb_lineno))
 		return JsonResponse({
-			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno), "sim_ini: " + str(simulated_df.index[0]), "sim_end: " + str(simulated_df.index[-1]), "obs_ini: " + str(observed_df.index[0]), "obs_end: " + str(observed_df.index[-1])}',
+			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
 		})
 
 
@@ -965,9 +965,8 @@ def get_scatterPlotLogScale(request):
 		print("error: " + str(e))
 		print("line: " + str(exc_tb.tb_lineno))
 		return JsonResponse({
-			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno), "sim_ini: " + str(simulated_df.index[0]), "sim_end: " + str(simulated_df.index[-1]), "obs_ini: " + str(observed_df.index[0]), "obs_end: " + str(observed_df.index[-1])}',
+			'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
 		})
-
 
 def get_volumeAnalysis(request):
 	"""
@@ -1581,7 +1580,6 @@ def get_time_series_bc(request):
 		forecast_record.index = pd.to_datetime(forecast_record.index)
 
 		'''Correct Bias Forecasts'''
-
 		monthly_simulated = simulated_df[simulated_df.index.month == (forecast_ens.index[0]).month].dropna()
 		monthly_observed = observed_df[observed_df.index.month == (forecast_ens.index[0]).month].dropna()
 
@@ -1671,6 +1669,12 @@ def get_time_series_bc(request):
 		for mes in meses:
 			values = forecast_record.loc[forecast_record.index.month == mes]
 
+			monthly_simulated = simulated_df[simulated_df.index.month == mes].dropna()
+			monthly_observed = observed_df[observed_df.index.month == mes].dropna()
+
+			min_simulated = np.min(monthly_simulated.iloc[:, 0].to_list())
+			max_simulated = np.max(monthly_simulated.iloc[:, 0].to_list())
+
 			min_factor_records_df = values.copy()
 			max_factor_records_df = values.copy()
 			fixed_records_df = values.copy()
@@ -1689,7 +1693,7 @@ def get_time_series_bc(request):
 			max_index_value = max_factor[max_factor[column_records] != 1].index.tolist()
 
 			for element in max_index_value:
-				max_factor[column_records].loc[max_factor.index == element] = tmp[column_records].loc[tmp.index == column_records] / max_simulated
+				max_factor[column_records].loc[max_factor.index == element] = tmp[column_records].loc[tmp.index == element] / max_simulated
 
 			tmp.loc[tmp[column_records] <= min_simulated, column_records] = min_simulated
 			tmp.loc[tmp[column_records] >= max_simulated, column_records] = max_simulated
@@ -1697,7 +1701,7 @@ def get_time_series_bc(request):
 			min_factor_records_df.update(pd.DataFrame(min_factor[column_records].values, index=min_factor.index, columns=[column_records]))
 			max_factor_records_df.update(pd.DataFrame(max_factor[column_records].values, index=max_factor.index, columns=[column_records]))
 
-			corrected_values = geoglows.bias.correct_forecast(values, simulated_df, observed_df)
+			corrected_values = geoglows.bias.correct_forecast(fixed_records_df, simulated_df, observed_df)
 			corrected_values = corrected_values.multiply(min_factor_records_df, axis=0)
 			corrected_values = corrected_values.multiply(max_factor_records_df, axis=0)
 			fixed_records = fixed_records.append(corrected_values)
