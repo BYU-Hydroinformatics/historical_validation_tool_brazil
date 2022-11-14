@@ -76,16 +76,14 @@ function toggleAcc(layerID) {
 function init_map() {
 
 	var base_layer = new ol.layer.Tile({
-		source: new ol.source.BingMaps({
-			key: 'eLVu8tDRPeQqmBlKAjcw~82nOqZJe2EpKmqd-kQrSmg~AocUZ43djJ-hMBHQdYDyMbT-Enfsk0mtUIGws1WeDuOvjY4EXCH-9OK3edNLDgkc',
-			imagerySet: 'Road'
-			//            imagerySet: 'AerialWithLabels'
-		})
-	});
+        source: new ol.source.OSM({
+        })
+    });
 
 	var streams = new ol.layer.Image({
 		source: new ol.source.ImageWMS({
-			url: JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wms',
+			//url: JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wms',
+			url: 'https://geoserver.hydroshare.org/geoserver/HS-11765271903a45d483416ce57bf8c710/wms',
 			params: { 'LAYERS': 'south_america-brazil-geoglows-drainage_line' },
 			serverType: 'geoserver',
 			crossOrigin: 'Anonymous'
@@ -97,7 +95,8 @@ function init_map() {
 
 	var stations = new ol.layer.Image({
 		source: new ol.source.ImageWMS({
-			url: JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wms',
+			//url: JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wms',
+			url: 'https://geoserver.hydroshare.org/geoserver/HS-11765271903a45d483416ce57bf8c710/wms',
 			params: { 'LAYERS': 'Brazil_Stations' },
 			serverType: 'geoserver',
 			crossOrigin: 'Anonymous'
@@ -119,7 +118,8 @@ function init_map() {
 
 }
 
-let ajax_url = JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wfs?request=GetCapabilities';
+//let ajax_url = JSON.parse($('#geoserver_endpoint').val())[0].replace(/\/$/, "") + JSON.parse($('#geoserver_endpoint').val())[1] + '/wfs?request=GetCapabilities';
+let ajax_url = 'https://geoserver.hydroshare.org/geoserver/wfs?request=GetCapabilities';
 
 let capabilities = $.ajax(ajax_url, {
 	type: 'GET',
@@ -132,7 +132,8 @@ let capabilities = $.ajax(ajax_url, {
 	success: function() {
 		let x = capabilities.responseText
 		.split('<FeatureTypeList>')[1]
-		.split('brazil_hydroviewer:south_america-brazil-geoglows-drainage_line')[1]
+		//.split('brazil_hydroviewer:south_america-brazil-geoglows-drainage_line')[1]
+		.split('HS-11765271903a45d483416ce57bf8c710:south_america-brazil-geoglows-drainage_line')[1]
 		.split('LatLongBoundingBox ')[1]
 		.split('/></FeatureType>')[0];
 
@@ -809,6 +810,293 @@ $('#stp-stations-toggle').on('change', function() {
 
 // Regions gizmo listener
 $('#regions').change(function() {getRegionGeoJsons()});
+
+function getBasinGeoJsons() {
+
+    let basins = region_index2[$("#basins").val()]['geojsons'];
+    for (let i in basins) {
+        var regionsSource = new ol.source.Vector({
+           url: staticGeoJSON2 + basins[i],
+           format: new ol.format.GeoJSON()
+        });
+
+        var regionStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#0050a0',
+                width: 3
+            })
+        });
+
+        var regionsLayer = new ol.layer.Vector({
+            name: 'myRegion',
+            source: regionsSource,
+            style: regionStyle
+        });
+
+        map.getLayers().forEach(function(regionsLayer) {
+        if (regionsLayer.get('name')=='myRegion')
+            map.removeLayer(regionsLayer);
+        });
+        map.addLayer(regionsLayer)
+
+        setTimeout(function() {
+            var myExtent = regionsLayer.getSource().getExtent();
+            map.getView().fit(myExtent, map.getSize());
+        }, 500);
+    }
+}
+
+function getSubBasinGeoJsons() {
+
+    let subbasins = region_index3[$("#subbasins").val()]['geojsons'];
+    for (let i in subbasins) {
+        var regionsSource = new ol.source.Vector({
+           url: staticGeoJSON3 + subbasins[i],
+           format: new ol.format.GeoJSON()
+        });
+
+        var regionStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#0050a0',
+                width: 3
+            })
+        });
+
+        var regionsLayer = new ol.layer.Vector({
+            name: 'myRegion',
+            source: regionsSource,
+            style: regionStyle
+        });
+
+        map.getLayers().forEach(function(regionsLayer) {
+        if (regionsLayer.get('name')=='myRegion')
+            map.removeLayer(regionsLayer);
+        });
+        map.addLayer(regionsLayer)
+
+        setTimeout(function() {
+            var myExtent = regionsLayer.getSource().getExtent();
+            map.getView().fit(myExtent, map.getSize());
+        }, 500);
+    }
+}
+
+// Regions gizmo listener
+$('#basins').change(function() {getBasinGeoJsons()});
+$('#subbasins').change(function() {getSubBasinGeoJsons()});
+
+// ######################################################################
+// Add data of the list to search input window
+function list_search_func (value_selected) {
+    document.getElementById("search-txt").value = value_selected;
+};
+
+// Update data of the list
+function remove_names_for_list () {
+    let filter = document.getElementById("search-txt").value.toUpperCase();
+    let options = document.getElementById("list-search").getElementsByTagName("option");
+
+    for (enu = 0; enu < options.length; enu++ ){
+        let txtValue = options[enu].value;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            options[enu].style.display = "";
+        } else {
+            options[enu].style.display = "none";
+        }
+
+    }
+};
+
+// Search gizmo
+function search_func () {
+    let zoom_desc = new $('#search-txt').val();
+    $("#list-search-container").addClass('hidden');
+
+    $.ajax({
+        url: "get-zoom-array",
+        type: "GET",
+        data: {
+            "zoom_desc": zoom_desc,
+        },
+
+        success: function (resp) {
+
+            let geojsons_boundary = resp['geojson'];
+            let message = resp['message'];
+            let geojson_staions = resp['stations'];
+            let geojson_boundary_cont = resp['boundary-cont'];
+            let geojson_stations_cont = resp['stations-cont'];
+
+            if (message < 400) {
+
+                var regionsSource = new ol.source.Vector({
+                });
+                regionsSource.addFeatures(
+                  new ol.format.GeoJSON().readFeatures(geojson_boundary_cont, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: map.getView().getProjection()
+                  })
+                );
+
+                var stationsSource = new ol.source.Vector({
+                });
+                stationsSource.addFeatures(
+                  new ol.format.GeoJSON().readFeatures(geojson_stations_cont, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: map.getView().getProjection()
+                  })
+                );
+
+                // Style region to zoom in
+                var regionStyle = new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 0, 0)',
+                        width: 0,
+                    })
+                });
+                // Style stations in region
+                var stationsStyle = new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 7,
+                        fill: new ol.style.Fill({ color: 'rgba(0, 0, 0, 0)' }),
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(0, 0, 0, 1)',
+                            width: 2
+                        })
+                    })
+                });
+
+                // Build region to zoom in
+                var regionsLayer = new ol.layer.Vector({
+                    name: 'geojsons_boundary',
+                    source: regionsSource,
+                    style: regionStyle
+                });
+                // Build stations to region
+                var stationsLayer = new ol.layer.Vector({
+                    name: 'geojsons_stations',
+                    source: stationsSource,
+                    style: stationsStyle
+                });
+
+                // Remove old layers
+                map.getLayers().forEach(function(regionsLayer) {
+                if (regionsLayer.get('name')=='myRegion')
+                    map.removeLayer(regionsLayer);
+                });
+
+                // Remove previous zoom layers
+                map.getLayers().forEach(function (regionsLayer) {
+                    if (regionsLayer.get('name') == 'geojsons_boundary')
+                        map.removeLayer(regionsLayer);
+                });
+
+                // Remove previous zoom layers
+                map.getLayers().forEach(function (stationsLayer) {
+                    if (stationsLayer.get('name') == 'geojsons_stations')
+                        map.removeLayer(stationsLayer);
+                });
+
+                map.addLayer(regionsLayer);
+                map.addLayer(stationsLayer);
+
+                // Make zoom in to layer
+                setTimeout(function () {
+                    var myExtent = regionsLayer.getSource().getExtent();
+                    map.getView().fit(myExtent, map.getSize());
+                }, 500);
+
+                setTimeout(function () {
+                    map.getLayers().forEach(function (stationsLayer, regionsLayer) {
+                        if (stationsLayer.get('name') == 'geojsons_stations')
+                            map.removeLayer(stationsLayer);
+                        if (stationsLayer.get('name') == 'geojsons_boundary')
+                            map.removeLayer(regionsLayer);
+                    });
+                }, 10000);
+
+            } else if (message >= 400) {
+
+                // Read region to zoom in
+                var regionsSource = new ol.source.Vector({
+                    url: staticStations + geojsons_boundary,
+                    format: new ol.format.GeoJSON()
+                });
+
+                // Style region to zoom in
+                var regionStyle = new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 0, 0)',
+                        width: 0,
+                    })
+                });
+
+                // Build region to zoom in
+                var regionsLayer = new ol.layer.Vector({
+                    name: 'geojsons_boundary',
+                    source: regionsSource,
+                    style: regionStyle
+                });
+
+                // Remove previous zoom layers
+                map.getLayers().forEach(function (regionsLayer) {
+                    if (regionsLayer.get('name') == 'geojsons_boundary')
+                        map.removeLayer(regionsLayer);
+                });
+
+                map.addLayer(regionsLayer);
+
+
+                // Make zoom in to layer
+                setTimeout(function () {
+                    var myExtent = regionsLayer.getSource().getExtent();
+                    map.getView().fit(myExtent, map.getSize());
+                }, 500);
+
+
+                $('#search-alert').html(
+                    '<p class="alert alert-danger" style="text-align: center"><strong>Busqueda invalida.</strong></p>'
+                );
+                $("#search-alert").removeClass('hidden');
+
+                setTimeout(function () {
+                    $('#search-alert').html(
+                        '<p></p>'
+                    );
+                    $("#search-alert").addClass('hidden');
+                }, 1500);
+            };
+
+        },
+
+        error: function () {
+
+            $('#search-alert').html(
+                '<p class="alert alert-danger" style="text-align: center"><strong>Busqueda invalida.</strong></p>'
+            );
+            $("#search-alert").removeClass('hidden');
+
+            setTimeout(function () {
+                $('#search-alert').html(
+                    '<p></p>'
+                );
+                $("#search-alert").addClass('hidden');
+            }, 1500);
+
+        }
+    });
+
+}
+
+function show_list_stations () {
+     $("#list-search-container").removeClass('hidden');
+}
+
+$("#list-search-container").addClass('hidden');
+document.getElementById("search-txt").onclick = function () { show_list_stations() };
+document.getElementById("search-btn").onclick = function () { search_func() };
+// ######################################################################
+
 
 // Function for the select2 metric selection tool
 $(document).ready(function() {

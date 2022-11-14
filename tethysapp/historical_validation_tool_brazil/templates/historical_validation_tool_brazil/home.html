@@ -24,8 +24,45 @@
       </div>
       <div>
         <br>
-        {% gizmo select_input regions %}
+        {% gizmo select_input2 regions %}
       </div>
+      <div>
+        {% gizmo select_input2 basins %}
+      </div>
+
+      {# Search SubBasins #}
+      <div>
+        {% gizmo select_input2 subbasins %}
+      </div>
+
+      <div>
+        {# Search window #}
+        <div>
+          <form>
+            <label>Search: </label>
+            <input id="search-txt" type="text" class="form-control" placeholder="ejemplo" onkeyup="remove_names_for_list()">
+          </form>
+        </div>
+
+        {# Search list #}
+        <div id="list-search-container" class="" style="color: black;" >
+          <select id="list-search" style="width: 100%" multiple="multiple" onchange="list_search_func(value)">
+            {% for name_search in search_list %}
+              <option value="{{ name_search }}">{{ name_search }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        {# Search button #}
+        <button id="search-btn" style="width: 100%;" ><span class="glyphicon glyphicon-search"></span></button>
+
+        {# Alert paragraph #}
+        <div id="search-alert" class="hidden">
+          <p></p>
+        </div>
+
+      </div>
+
     </div>
   </div>
   <img id="featureLoader" style="display: none; position:fixed; z-index: 100; left : 0; bottom : 0; right : 0; top : 0; margin:auto;" src="{% static 'historical_validation_tool_brazil/images/loader2.gif' %}">

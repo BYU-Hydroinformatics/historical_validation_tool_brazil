@@ -8,7 +8,7 @@ class HistoricalValidationToolBrazil(TethysAppBase):
 
     name = 'Historical Validation Tool Brazil'
     index = 'historical_validation_tool_brazil:home'
-    icon = 'historical_validation_tool_brazil/images/historic_validation_brazil_logo.png'
+    icon = 'historical_validation_tool_brazil/images/historic_validation_brazil_logo.jpg'
     package = 'historical_validation_tool_brazil'
     root_url = 'historical-validation-tool-brazil'
     color = '#009C3B'
@@ -117,6 +117,15 @@ class HistoricalValidationToolBrazil(TethysAppBase):
                 name='get_forecast_ensemble_bc_data_csv',
                 url='get-forecast-ensemble-bc-data-csv',
                 controller='historical_validation_tool_brazil.controllers.get_forecast_ensemble_bc_data_csv'),
+            ########################################################
+            ########################################################
+            UrlMap(
+                name='get_zoom_array',
+                url='get-zoom-array',
+                controller='historical_validation_tool_brazil.controllers.get_zoom_array',
+            ),
+            ########################################################
+            ########################################################
         )
 
         return url_maps

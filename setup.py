@@ -16,7 +16,7 @@ resource_files += find_resource_files('tethysapp/' + app_package + '/workspaces'
 
 setup(
     name=release_package,
-    version='1.1',
+    version='1.2',
     description='This app combines the observed data and the simulated data from the GEOGloWS ECMWF Streaamflow Services in Brazil.',
     long_description='',
     keywords='"Hydrology", "Time Series", "Bias Correction", "Hydrostats", "GEOGloWS", "Historical Validation Tool", "Brazil"',
