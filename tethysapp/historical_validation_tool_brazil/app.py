@@ -8,7 +8,7 @@ class HistoricalValidationToolBrazil(TethysAppBase):
 
     name = 'Historical Validation Tool Brazil'
     index = 'historical_validation_tool_brazil:home'
-    icon = 'historical_validation_tool_brazil/images/historic_validation_brazil_logo.jpg'
+    icon = 'historical_validation_tool_brazil/images/historical_validation_brazil_logo.jpg'
     package = 'historical_validation_tool_brazil'
     root_url = 'historical-validation-tool-brazil'
     color = '#009C3B'

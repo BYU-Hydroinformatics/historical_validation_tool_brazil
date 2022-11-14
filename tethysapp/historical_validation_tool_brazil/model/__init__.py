@@ -230,7 +230,7 @@ class Stations_manage:
 
         # Assert does not existence of the station
         if len(coords) < 1:
-            return 'COLOMBIA.json', coords, 404, '', ''
+            return 'Brazil.json', coords, 404, '', ''
 
         # Extract coords of the polygon
         lat_coord, lon_coord = get_zoom_coords(df=coords, lat='Latitude', lon='Longitude')

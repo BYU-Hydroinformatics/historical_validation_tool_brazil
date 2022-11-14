@@ -857,7 +857,7 @@ function getSubBasinGeoJsons() {
 
         var regionStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: '#0050a0',
+                color: '#009C3B',
                 width: 3
             })
         });
