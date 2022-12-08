@@ -1,6 +1,10 @@
-{% extends "historical_validation_tool_brazil/base.html" %} {% load static %} {%
-load tethys_gizmos %} {% block import_gizmos %} {% import_gizmo_dependency
-plotly_view %} {% endblock %} {% block app_content %}
+{% extends "historical_validation_tool_brazil/base.html" %}
+{% load static %} 
+{% load tethys_gizmos %} 
+{% block import_gizmos %} 
+{% import_gizmo_dependency plotly_view %} 
+{% endblock %} 
+{% block app_content %}
 <div id="map" class="map">
   <div id="map-view-legend" class="map-view-legend ol-unselectable ol-control">
     <div>
@@ -117,7 +121,9 @@ plotly_view %} {% endblock %} {% block app_content %}
   "
   src="{% static 'historical_validation_tool_brazil/images/loader2.gif' %}"
 />
-{% endblock %} {% block header_buttons %}
+{% endblock %} 
+
+{% block header_buttons %}
 <div class="hidden" style="margin-right: 15px">
   {% gizmo text_input geoserver_endpoint %}
 </div>
@@ -142,8 +148,8 @@ plotly_view %} {% endblock %} {% block app_content %}
     ><span class="glyphicon glyphicon-question-sign"></span
   ></a>
 </div>
-{% endblock %} {# Use the after_app_content block for modals #} {% block
-after_app_content %}
+{% endblock %} {# Use the after_app_content block for modals #} 
+{% block after_app_content %}
 <!----Observed Data ----->
 <div
   class="modal fade"
@@ -708,4 +714,6 @@ after_app_content %}
     </div>
   </div>
 </div>
-{% endblock %} {% block app_actions %} {% endblock %}
+{% endblock %} 
+{% block app_actions %} 
+{% endblock %}
