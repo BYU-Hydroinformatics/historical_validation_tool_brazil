@@ -101,7 +101,7 @@
       </button>
 
       {# Alert paragraph #}
-      <div id="search-alert" class="hidden">
+      <div id="search-alert" class="d-none">
         <p></p>
       </div>
     </div>
@@ -124,7 +124,7 @@
 {% endblock %} 
 
 {% block header_buttons %}
-<div class="hidden" style="margin-right: 15px">
+<div class="d-none" style="margin-right: 15px">
   {% gizmo text_input geoserver_endpoint %}
 </div>
 <div
@@ -245,7 +245,7 @@
                 <div class="flex-container-row">
                   <img
                     id="hydrographs-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
@@ -254,7 +254,7 @@
                 <div id="Download_hydrographs">
                   <div
                     id="download_observed_discharge"
-                    class="btn-group hidden long-term-select"
+                    class="btn-group d-none long-term-select"
                     role="group"
                   >
                     <a
@@ -268,7 +268,7 @@
                   </div>
                   <div
                     id="download_simulated_discharge"
-                    class="btn-group hidden"
+                    class="btn-group d-none"
                     role="group"
                   >
                     <a
@@ -282,7 +282,7 @@
                   </div>
                   <div
                     id="download_simulated_bc_discharge"
-                    class="btn-group hidden long-term-select"
+                    class="btn-group d-none long-term-select"
                     role="group"
                   >
                     <a
@@ -304,7 +304,7 @@
                 <div class="flex-container-row">
                   <img
                     id="dailyAverages-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
@@ -312,7 +312,7 @@
                 <div class="flex-container-row">
                   <img
                     id="monthlyAverages-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
@@ -320,7 +320,7 @@
                 <div class="flex-container-row">
                   <img
                     id="scatterPlot-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
@@ -328,7 +328,7 @@
                 <div class="flex-container-row">
                   <img
                     id="scatterPlotLogScale-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
@@ -336,7 +336,7 @@
                 <div class="flex-container-row">
                   <img
                     id="volumeAnalysis-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
@@ -548,7 +548,7 @@
               <div class="panel-body">
                 <div
                   id="dates"
-                  class="hidden form-group"
+                  class="d-none form-group"
                   style="padding: 30px 30px 20px 0"
                 >
                   <!--<select id="datesSelect" class="form-control"></select>-->
@@ -557,14 +557,14 @@
                 <div class="flex-container-row">
                   <img
                     id="forecast-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
                 <div id="forecast-chart"></div>
                 <div
                   id="download_forecast"
-                  class="btn-group hidden"
+                  class="btn-group d-none"
                   role="group"
                 >
                   <a
@@ -578,7 +578,7 @@
                 </div>
                 <div
                   id="download_forecast_ensemble"
-                  class="btn-group hidden"
+                  class="btn-group d-none"
                   role="group"
                 >
                   <a
@@ -590,20 +590,20 @@
                     Forecast Ensemble
                   </a>
                 </div>
-                <!--<div id="dates" class="hidden form-group" style="padding: 30px 30px 20px 0">-->
+                <!--<div id="dates" class="d-none form-group" style="padding: 30px 30px 20px 0">-->
                 <!--<select id="datesSelect" class="form-control"></select>-->
                 <!--</div>-->
                 <div class="flex-container-row">
                   <img
                     id="forecast-bc-loading"
-                    class="view-file hidden"
+                    class="view-file d-none"
                     src="{% static 'historical_validation_tool_brazil/images/loader.gif' %}"
                   />
                 </div>
                 <div id="forecast-bc-chart"></div>
                 <div
                   id="download_forecast_bc"
-                  class="btn-group hidden long-term-select"
+                  class="btn-group d-none long-term-select"
                   role="group"
                 >
                   <a
@@ -617,7 +617,7 @@
                 </div>
                 <div
                   id="download_forecast_ensemble_bc"
-                  class="btn-group hidden"
+                  class="btn-group d-none"
                   role="group"
                 >
                   <a
@@ -634,7 +634,7 @@
           </div>
         </div>
       </div>
-      <div id="info" class="hidden"></div>
+      <div id="info" class="d-none"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data- bs-dismiss="modal">
           Close
