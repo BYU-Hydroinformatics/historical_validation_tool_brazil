@@ -97,7 +97,7 @@
 
       {# Search button #}
       <button id="search-btn" style="width: 100%">
-        <span class="glyphicon glyphicon-search"></span>
+        <i class="bi bi-search"></i>
       </button>
 
       {# Alert paragraph #}
@@ -134,8 +134,7 @@
   title="View Graph"
 >
   <a data-toggle="modal" data-target="#obsgraph"
-    ><span class="glyphicon glyphicon-globe"></span
-  ></a>
+    ><i class="bi bi-globe"></i></a>
 </div>
 
 <div
@@ -145,7 +144,7 @@
   title="Help"
 >
   <a data-toggle="modal" data-target="#help-modal"
-    ><span class="glyphicon glyphicon-question-sign"></span
+    ><i class="bi bi-play-circle-fill"></i></
   ></a>
 </div>
 {% endblock %} {# Use the after_app_content block for modals #} 
@@ -263,7 +262,7 @@
                       role="button"
                       id="submit-download-observed-discharge"
                     >
-                      <span class="glyphicon glyphicon-play"></span> Observed
+                    <i class="bi bi-play-circle-fill"></i> Observed
                       Discharge
                     </a>
                   </div>
@@ -277,7 +276,7 @@
                       role="button"
                       id="submit-download-simulated-discharge"
                     >
-                      <span class="glyphicon glyphicon-play"></span> Simulated
+                    <i class="bi bi-play-circle-fill"></i> Simulated
                       Discharge
                     </a>
                   </div>
@@ -291,7 +290,7 @@
                       role="button"
                       id="submit-download-simulated-bc-discharge"
                     >
-                      <span class="glyphicon glyphicon-play"></span> Corrected
+                    <i class="bi bi-play-circle-fill"></i>Corrected
                       Simulated Discharge
                     </a>
                   </div>
@@ -395,12 +394,17 @@
                     Correlation Coefficient, and Coefficient of Determination.
                   </p>
                   Optional Parameters
-                  <span
+                  <i 
+                    style="font-size: 15px"
+                    class="glyphicon bi bi-play-circle-fill"
+                    title="Optional parameter input boxes will appear here if a metric with optional parameters is selected."
+                  ></i>
+                  <!-- <span
                     style="font-size: 15px"
                     class="glyphicon glyphicon-info-sign icon_info"
                     title="Optional parameter input boxes will appear here if a metric with optional parameters is selected."
                   >
-                  </span>
+                  </span> -->
                 </h4>
                 <div class="form-row" id="mase_param_div" style="display: none">
                   <div class="form-group col-md-12" id="MASE_form">
@@ -568,7 +572,7 @@
                     role="button"
                     id="submit-download-forecast"
                   >
-                    <span class="glyphicon glyphicon-play"></span> Download
+                  <i class="bi bi-play-circle-fill"></i> Download
                     Forecast
                   </a>
                 </div>
@@ -582,7 +586,7 @@
                     role="button"
                     id="submit-download-forecast-ensemble"
                   >
-                    <span class="glyphicon glyphicon-play"></span> Download
+                  <i class="bi bi-play-circle-fill"></i> Download
                     Forecast Ensemble
                   </a>
                 </div>
@@ -607,7 +611,7 @@
                     role="button"
                     id="submit-download-forecast-bc"
                   >
-                    <span class="glyphicon glyphicon-play"></span> Download
+                  <i class="bi bi-play-circle-fill"></i> Download
                     Corrected Forecast
                   </a>
                 </div>
@@ -621,7 +625,7 @@
                     role="button"
                     id="submit-download-forecast-bc-ensemble"
                   >
-                    <span class="glyphicon glyphicon-play"></span> Download
+                  <i class="bi bi-play-circle-fill"></i> Download
                     Corrected Forecast Ensemble
                   </a>
                 </div>
