@@ -33,6 +33,9 @@ import time
 from .model import Model as model
 from .model import Stations_manage as stations
 
+from tethys_sdk.routing import controller
+
+@controller(name='home',url='historical-validation-tool-brazil')
 def home(request):
     """
     Controller for the app home page.
@@ -143,7 +146,7 @@ def home(request):
 
     return render(request, 'historical_validation_tool_brazil/home.html', context)
 
-
+@controller(name='get_popup_response',url='historical-validation-tool-brazil/get-request-data')
 def get_popup_response(request):
     """
     Get simulated data from api
@@ -569,7 +572,7 @@ def get_popup_response(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_hydrographs',url='historical-validation-tool-brazil/get-hydrographs')
 def get_hydrographs(request):
     """
     Get observed data from CEMADEN web site
@@ -639,7 +642,7 @@ def get_hydrographs(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_dailyAverages',url='historical-validation-tool-brazil/get-dailyAverages')
 def get_dailyAverages(request):
     """
     Get observed data from CEMADEN web site
@@ -718,7 +721,7 @@ def get_dailyAverages(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_monthlyAverages',url='historical-validation-tool-brazil/get-monthlyAverages')
 def get_monthlyAverages(request):
     """
     Get observed data from CEMADEN web site
@@ -796,7 +799,7 @@ def get_monthlyAverages(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_scatterPlot',url='historical-validation-tool-brazil/get-scatterPlot')
 def get_scatterPlot(request):
     """
     Get observed data from CEMADEN web site
@@ -914,7 +917,7 @@ def get_scatterPlot(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_scatterPlotLogScale',url='historical-validation-tool-brazil/get-scatterPlotLogScale')
 def get_scatterPlotLogScale(request):
     """
     Get observed data from CEMADEN web site
@@ -1007,6 +1010,8 @@ def get_scatterPlotLogScale(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
+
+@controller(name='get_volumeAnalysis',url='historical-validation-tool-brazil/get-volumeAnalysis')
 def get_volumeAnalysis(request):
     """
     Get observed data from CEMADEN web site
@@ -1105,7 +1110,7 @@ def get_volumeAnalysis(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='volume_table_ajax',url='historical-validation-tool-brazil/volume-table-ajax')
 def volume_table_ajax(request):
     """Calculates the volumes of the simulated and observed streamflow"""
 
@@ -1171,7 +1176,7 @@ def volume_table_ajax(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='make_table_ajax',url='historical-validation-tool-brazil/make-table-ajax')
 def make_table_ajax(request):
 
     start_time = time.time()
@@ -1346,7 +1351,7 @@ def get_units_title(unit_type):
         units_title = "ft"
     return units_title
 
-
+@controller(name='get-time-series',url='historical-validation-tool-brazil/get-time-series')
 def get_time_series(request):
 
     start_time = time.time()
@@ -1563,7 +1568,7 @@ def get_time_series(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get-time-series-bc',url='historical-validation-tool-brazil/get-time-series-bc')
 def get_time_series_bc(request):
 
     start_time = time.time()
@@ -1946,7 +1951,7 @@ def get_time_series_bc(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get-available-dates',url='historical-validation-tool-brazil/ecmwf-rapid/get-available-dates')
 def get_available_dates(request):
     get_data = request.GET
 
@@ -1980,7 +1985,7 @@ def get_available_dates(request):
         "available_dates": json.dumps(dates)
     })
 
-
+@controller(name='get_observed_discharge_csv',url='historical-validation-tool-brazil/ecmwf-rapid/get-observed-discharge-csv')
 def get_observed_discharge_csv(request):
     """
     Get observed data from CEMADEN website
@@ -2015,7 +2020,7 @@ def get_observed_discharge_csv(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_simulated_discharge_csv',url='historical-validation-tool-brazil/get-simulated-discharge-csv')
 def get_simulated_discharge_csv(request):
     """
     Get historic simulations from ERA Interim
@@ -2050,7 +2055,7 @@ def get_simulated_discharge_csv(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_simulated_bc_discharge_csv',url='historical-validation-tool-brazil/get-simulated-bc-discharge-csv')
 def get_simulated_bc_discharge_csv(request):
     """
     Get historic simulations from ERA Interim
@@ -2087,7 +2092,7 @@ def get_simulated_bc_discharge_csv(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_forecast_data_csv',url='historical-validation-tool-brazil/get-forecast-data-csv')
 def get_forecast_data_csv(request):
     """""
     Returns Forecast data as csv
@@ -2121,6 +2126,7 @@ def get_forecast_data_csv(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
+@controller(name='get_forecast_ensemble_data_csv',url='historical-validation-tool-brazil/get-forecast-ensemble-data-csv')
 def get_forecast_ensemble_data_csv(request):
     """""
     Returns Forecast data as csv
@@ -2155,7 +2161,7 @@ def get_forecast_ensemble_data_csv(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_forecast_bc_data_csv',url='historical-validation-tool-brazil/get-forecast-bc-data-csv')
 def get_forecast_bc_data_csv(request):
     """""
     Returns Forecast data as csv
@@ -2193,7 +2199,7 @@ def get_forecast_bc_data_csv(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-
+@controller(name='get_forecast_ensemble_bc_data_csv',url='historical-validation-tool-brazil/get-forecast-ensemble-bc-data-csv')
 def get_forecast_ensemble_bc_data_csv(request):
     """""
     Returns Forecast data as csv
@@ -2234,7 +2240,7 @@ def get_forecast_ensemble_bc_data_csv(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-############################################################
+@controller(name='get_zoom_array',url='historical-validation-tool-brazil/get-zoom-array')
 def get_zoom_array(request):
     zoom_description = request.GET['zoom_desc']
 
@@ -2263,4 +2269,3 @@ def get_zoom_array(request):
             'error': f'{"error: " + str(e), "line: " + str(exc_tb.tb_lineno)}',
         })
 
-############################################################
