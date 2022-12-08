@@ -157,18 +157,35 @@
   role="dialog"
   aria-labelledby="about-modal-label"
 >
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <button
-          type="button"
-          class="close"
-          data- bs-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <div class="row">
+      <div class="modal-header" id="modal-headerex">
+
+          <div class="row">
+            <div class="col-md-10">
+              <h4 id="Station-Name-Tab"> 
+
+              </h4>
+            </div>
+
+            <div class="col-md-2">
+              <div class = "logos_cuadrado" align="right">
+                <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/ANA_Logo.jpeg' %}" />
+                <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/byu_logo.png' %}">
+                <img id="servir_logo" class="obslogos" src="{% static 'historical_validation_tool_brazil/images/Servir_logo.jpeg' %}">
+                <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/logo_cemaden.png' %}">
+              </div>
+                
+            </div>
+            <div id="interaction"></div>
+          </div>
+          <div class="row">
+            <div id="station-info" class="col-md-10 row"></div>
+
+          </div>
+
+
+        <!-- <div class="row">
           <div id="station-info" class="col-md-8"></div>
           <div class="col-md-4">
             <div align="right">
@@ -176,10 +193,7 @@
                 class="obslogos"
                 src="{% static 'historical_validation_tool_brazil/images/byu_logo.png' %}"
               />
-              <img
-                class="obslogos"
-                src="{% static 'historical_validation_tool_brazil/images/ANA_Logo.jpeg' %}"
-              />
+              <img class="obslogos" src="{% static 'historical_validation_tool_brazil/images/ANA_Logo.jpeg' %}" />
               <img
                 class="obslogos"
                 src="{% static 'historical_validation_tool_brazil/images/logo_cemaden.jpg' %}"
@@ -191,11 +205,17 @@
             </div>
           </div>
           <div id="interaction"></div>
-        </div>
+        </div> -->
       </div>
       <div class="modal-body">
+        <ul class="nav nav-tabs">
+          <li class="nav-item"><a id="hydrographs_tab_link" class="nav-link active" href="#hydrographs" aria-controls="hydrographs" data-bs-toggle="tab">Hydrographs</a></li>
+          <li class="nav-item"><a id="visualAnalysis_tab_link" class="nav-link" href="#visualAnalysis" aria-controls="visualAnalysis"  data-bs-toggle="tab">Visual Analysis</a></li>
+          <li class="nav-item"><a id="metricsReport_tab_link" class="nav-link" href="#metricsReport" aria-controls="metricsReport"  data-bs-toggle="tab">Metrics Report</a></li>
+          <li class="nav-item"><a id="forecast_tab_link" class="nav-link" href="#forecast" aria-controls="forecast"  data-bs-toggle="tab">Forecast</a></li>
+        </ul>
         <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
+        <!-- <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active">
             <a
               id="hydrographs_tab_link"
@@ -236,7 +256,7 @@
               >Forecast</a
             >
           </li>
-        </ul>
+        </ul> -->
         <!-- Tab panes -->
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="hydrographs">
@@ -651,20 +671,15 @@
   role="dialog"
   aria-labelledby="help-modal-label"
 >
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button
-          type="button"
-          class="close"
-          data- bs-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
+
         <h5 class="modal-title" id="help-modal-label">
           Historical Validation Tool
         </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
       </div>
       <div class="modal-body">
         <p>

@@ -814,15 +814,21 @@ function map_events() {
             //streamcomid = result["features"][0]["properties"]["COMID"];
             streamcomid = result['features'][0]['properties']['new_COMID'];
             stream = result['features'][0]['properties']['NomeRio'];
+
+            $('#Station-Name-Tab').html(stationname)
+
             $('#station-info').append(
-              '<h3 id="Station-Name-Tab">Current Station: ' +
-                stationname +
-                '</h3><h5 id="Station-Code-Tab">Station Code: ' +
+              '<div class=" col col-md-6">'+
+
+              // '<h3 id="Station-Name-Tab">Current Station: ' +
+              //   stationname +</h3>
+              '<p id="Station-Code-Tab">Station Code: ' +
                 stationcode +
-                '</h3><h5 id="COMID-Tab">Station COMID: ' +
-                streamcomid +
-                '</h5><h5>Stream: ' +
-                stream
+                '<p><p id="COMID-Tab">Station COMID: ' +
+                str/eamcomid +
+                '</p><p>Stream: ' +
+                stream + '</p>'+
+                '</div>'
             );
             get_requestData(
               watershed,
