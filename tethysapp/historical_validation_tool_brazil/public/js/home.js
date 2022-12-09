@@ -1273,6 +1273,8 @@ document.getElementById('search-btn').onclick = function () {
 // Function for the select2 metric selection tool
 $(document).ready(function () {
   $('#metric_select2').select2({ width: 'resolve' });
+  $('#metric_select2').select2({ dropdownParent: $('#obsgraph'), dropdownPosition:'below' })
+
 });
 
 $('#metric_select2').on('select2:close', function (e) {
