@@ -825,7 +825,7 @@ function map_events() {
               '<p id="Station-Code-Tab">Station Code: ' +
                 stationcode +
                 '<p><p id="COMID-Tab">Station COMID: ' +
-                str/eamcomid +
+                streamcomid +
                 '</p><p>Stream: ' +
                 stream + '</p>'+
                 '</div>'
