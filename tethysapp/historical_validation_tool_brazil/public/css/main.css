@@ -1,3 +1,22 @@
+#modal-headerex{
+  display: inline;
+}
+#ana_logo{
+  height: 50px;
+
+}
+
+.logos_cuadrado{
+  display: flex;
+  flex-direction: row;
+  height: fit-content;
+  flex-basis: fit-content;
+  justify-content: end;
+}
+#servir_logo{
+  height: 70px;
+}
+
 .tab-content > .tab-pane,
 .pill-content > .pill-pane {
   display: block;
