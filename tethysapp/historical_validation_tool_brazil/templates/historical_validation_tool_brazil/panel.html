@@ -1,0 +1,271 @@
+{% load tethys_gizmos %}
+
+{% block import_gizmos %}
+    {% import_gizmo_dependency plotly_view %}
+    {% import_gizmo_dependency datatable_view %}
+    {% import_gizmo_dependency date_picker %}
+{% endblock %}
+
+{% block panel_options %}
+    <ul class="nav nav-tabs" id="panel-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+        <button 
+            class="nav-link active" 
+            id="hydrograph-tab" 
+            data-bs-toggle="tab" 
+            data-bs-target="#hydrograph" 
+            type="button" 
+            role="tab" 
+            aria-controls="hydrograph" 
+            aria-selected="true"> Historical data </button>
+        </li>
+        <li class="nav-item" role="presentation">
+        <button 
+            class="nav-link" 
+            id="visual-analisis-tab" 
+            data-bs-toggle="tab" 
+            data-bs-target="#visual-analisis" 
+            type="button" 
+            role="tab" 
+            aria-controls="visual-analisis" 
+            aria-selected="false">Visual analysis</button>
+        </li>
+        <li class="nav-item" role="presentation">
+        <button 
+            class="nav-link" 
+            id="metrics-tab" 
+            data-bs-toggle="tab"
+            data-bs-target="#metrics" 
+            type="button" 
+            role="tab" 
+            aria-controls="metrics" 
+            aria-selected="false"> Metrics </button>
+        </li>
+        <li class="nav-item" role="presentation">
+        <button 
+            class="nav-link" 
+            id="forecast-tab" 
+            data-bs-toggle="tab"
+            data-bs-target="#forecast" 
+            type="button" 
+            role="tab" 
+            aria-controls="forecast" 
+            aria-selected="false"> Raw Forecast </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button 
+                class="nav-link" 
+                id="corrected-forecast-tab" 
+                data-bs-toggle="tab"
+                data-bs-target="#corrected-forecast" 
+                type="button" 
+                role="tab" 
+                aria-controls="corrected-forecast" 
+                aria-selected="false"> Corrected Forecast </button>
+        </li>
+    </ul>
+    <div class="tab-content" id="panel-tab-content">
+        <div class="tab-pane fade show active" id="hydrograph" role="tabpanel" aria-labelledby="hydrograph-tab">
+            <div class="container-fluid">
+                {% gizmo corrected_data_plot %}
+            </div>
+        </div>
+        <div class="tab-pane fade" id="visual-analisis" role="tabpanel" aria-labelledby="visual-analisis-tab">
+            <div class="container-fluid">
+                {% gizmo daily_average_plot %}
+            </div>
+            <div class="container-fluid">
+                {% gizmo monthly_average_plot %}
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        {% gizmo data_scatter_plot %}
+                    </div>
+                    <div class="col">
+                        {% gizmo log_data_scatter_plot %}
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                {% gizmo acumulated_volume_plot %}
+            </div>
+        </div>
+        <div class="tab-pane fade" id="metrics" role="tabpanel" aria-labelledby="metrics-tab">
+            <div>
+                <br>
+                <div class="control-group">
+					<label for="input-tags" style="font-size: 16px;">
+                        <b>Seleccione métricas adicionales para incluir en el reporte:</b>
+                    </label>
+					<input type="text" id="input-tags" class="input-tags demo-default">
+				</div>
+                <div style="padding-top: 8px;">
+                    <button type="button" class="btn btn-primary" id="metrics-button">Añadir métricas</button>
+                </div>
+                <div style="font-size: 13px;">
+                    Presione el botón para agregar métricas a la lista predeterminada. La lista predeterminada incluye: Error medio (ME), Raíz del error cuadrático medio (RMSE), Eficiencia de Nash-Sutcliffe (NSE), Eficiencia de Kling-Gupta (2009), Eficiencia de King-Glupta (2012), Coeficiente de correlación de Pearson, Coeficiente de correlación de Spearman y coeficiente de determinación.
+                </div>
+                <script>
+                    $('.input-tags').selectize({
+                        plugins: ['remove_button'],
+                        persist: false,
+                        maxItems: null,
+                        valueField: 'id',
+                        labelField: 'id',
+                        searchField: 'id',
+                        options: [
+                             {id: 'ME'}, {id: 'MAE'}, {id: 'MSE'}, {id: 'MLE'}, {id: 'MALE'}, {id: 'MSLE'}, {id: 'MdE'}, {id: 'MdAE'}, {id: 'MdSE'}, {id: 'ED'}, 
+                             {id: 'NED'}, {id: 'RMSE'}, {id: 'RMSLE'}, {id: 'NRMSE (Range)'}, {id: 'NRMSE (Mean)'}, {id: 'NRMSE (IQR)'}, {id: 'IRMSE'}, {id: 'MASE'}, 
+                             {id: 'r2'}, {id: 'R (Pearson)'}, {id: 'R (Spearman)'}, {id: 'ACC'}, {id: 'MAPE'}, {id: 'MAPD'}, {id: 'MAAPE'}, {id: 'SMAPE1'}, {id: 'SMAPE2'}, 
+                             {id: 'd'}, {id: 'd1'}, {id: 'd (Mod.)'}, {id: 'd (Rel.)'}, {id: 'dr'}, {id: 'M'}, {id: '(MB) R'}, {id: 'NSE'}, {id: 'NSE (Mod.)'}, {id: 'NSE (Rel.)'}, 
+                             {id: 'KGE (2009)'}, {id: 'KGE (2012)'}, {id: "E1'"}, {id: "D1'"}, {id: 'VE'}, {id: 'SA'}, {id: 'SC'}, {id: 'SID'}, {id: 'SGA'}, {id: 'H1 (MHE)'}, 
+                             {id: 'H1 (MAHE)'}, {id: 'H1 (RMSHE)'}, {id: 'H2 (MHE)'}, {id: 'H2 (MAHE)'}, {id: 'H2 (RMSHE)'}, {id: 'H3 (MHE)'}, {id: 'H3 (MAHE)'}, {id: 'H3 (RMSHE)'}, 
+                             {id: 'H4 (MHE)'}, {id: 'H4 (MAHE)'}, {id: 'H4 (RMSHE)'}, {id: 'H5 (MHE)'}, {id: 'H5 (MAHE)'}, {id: 'H5 (RMSHE)'}, {id: 'H6 (MHE)'}, {id: 'H6 (MAHE)'}, 
+                             {id: 'H6 (RMSHE)'}, {id: 'H7 (MHE)'}, {id: 'H7 (MAHE)'}, {id: 'H7 (RMSHE)'}, {id: 'H8 (MHE)'}, {id: 'H8 (MAHE)'}, {id: 'H8 (RMSHE)'}, {id: 'H10 (MHE)'}, 
+                             {id: 'H10 (MAHE)'}, {id: 'H10 (RMSHE)'}, {id: 'GMD'}, {id: 'MV'}
+                        ],
+                        create: false
+                    });
+
+                    $("#metrics-button").on("click", function(){
+                        metrics_values = $("#input-tags")[0].value;
+                        $.ajax({
+                            type: 'GET', 
+                            url: "get-metrics-custom",
+                            data:{
+                                metrics: metrics_values
+                            }
+                        }).done(function(response){
+                            $("#metrics-table-panel").html(response)
+                        })
+                    });
+				</script>
+            </div>
+            <div id="metrics-table-panel">
+                {{ metrics_table|safe }}
+            </div>
+        </div>
+        <div class="tab-pane fade" id="forecast" role="tabpanel" aria-labelledby="forecast-tab">
+            {% block forecast_raw %}
+                <br>
+                <div style="padding-left: 12px"><b>Fecha de inicialización:</b></div>
+                <div class="input-group" style="padding-left: 12px; padding-right: 12px;">
+                    <input type="text" class="form-control" id="datepicker_raw">
+                    <button class="btn btn-primary btn-sm" type="button" id="button_datepicker_raw">Actualizar</button>
+                </div>
+                <div id="container-forecast-data">
+                    <div class="container-fluid" id="ensemble_forecast_plot">
+                        {% gizmo ensemble_forecast_plot %}
+                    </div>
+                    <div class="container-fluid" id="forecast-table">
+                        {{ forecast_table|safe }}
+                    </div>
+                </div>
+                <br>
+            {% endblock %}
+        </div>
+
+        <div class="tab-pane fade" id="corrected-forecast" role="tabpanel" aria-labelledby="corrected-forecast-tab">
+            <br>
+            <div style="padding-left: 12px;"><b>Fecha de inicialización:</b></div>
+            <div class="input-group" style="padding-left: 12px; padding-right: 12px;">
+                <input type="text" class="form-control" id="datepicker_cor">
+                <button class="btn btn-primary btn-sm" type="button" id="button_datepicker_cor">Actualizar</button>
+            </div>
+            <div id="container-corrected-forecast-data">
+                <div class="container-fluid" id="corrected_ensemble_forecast_plot">
+                    {% gizmo corrected_ensemble_forecast_plot %}
+                </div>
+                <div class="container-fluid" id="corrected-forecast-table">
+                    {{ corrected_forecast_table|safe }}
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+    <script>
+        datepicker_raw = flatpickr("#datepicker_raw", {
+            minDate: new Date().fp_incr(-45),
+            maxDate: "today",
+            defaultDate: "today",
+            dateFormat: "Ymd",
+            altInput: true,
+            altFormat: "F j, Y",
+            enableTime: false,
+            locale: "es"
+        });
+        datepicker_cor = flatpickr("#datepicker_cor", {
+            minDate: new Date().fp_incr(-45),
+            maxDate: "today",
+            defaultDate: "today",
+            dateFormat: "Ymd",
+            altInput: true,
+            altFormat: "F j, Y",
+            enableTime: false,
+            locale: "es"
+        });
+
+        loader = `<div class="loading-container" style="height: 350px; padding-top: 12px;"> 
+                        <div class="loading"> 
+                        <h2>LOADIND DATA</h2>
+                            <span></span><span></span><span></span><span></span><span></span><span></span><span></span> 
+                        </div>
+                    </div>`;
+
+        $("#button_datepicker_raw").on("click", function(){
+            forecast_date = $("#datepicker_raw").val();
+            datepicker_cor.setDate(forecast_date)
+            $("#ensemble_forecast_plot").html(loader);
+            $("#corrected_ensemble_forecast_plot").html(loader);
+            $("#forecast-table").html("");
+            $("#corrected-forecast-table").html("");
+            // Retrieve the raw forecast
+            $.ajax({
+                type: 'GET', 
+                url: "get-raw-forecast-date",
+                data: { 
+                    fecha: forecast_date, 
+                    codigo: active_code,
+                    comid: active_comid,
+                    nombre: active_name,
+                    width: `${$("#panel-tab-content").width()}`
+                }
+            }).done(function(response){
+                $("#ensemble_forecast_plot").html(response.ensemble_forecast_plot);  
+                $("#corrected_ensemble_forecast_plot").html(response.corr_ensemble_forecast_plot);
+                $("#forecast-table").html(response.forecast_table);
+                $("#corrected-forecast-table").html(response.corr_forecast_table);
+            })    
+        })
+
+        $("#button_datepicker_cor").on("click", function(){
+            forecast_date = $("#datepicker_cor").val();
+            datepicker_raw.setDate(forecast_date)
+            $("#ensemble_forecast_plot").html(loader);
+            $("#corrected_ensemble_forecast_plot").html(loader);
+            $("#forecast-table").html("");
+            $("#corrected-forecast-table").html("");
+            // Retrieve the raw forecast
+            $.ajax({
+                type: 'GET', 
+                url: "get-raw-forecast-date",
+                data: { 
+                    fecha: forecast_date, 
+                    codigo: active_code,
+                    comid: active_comid,
+                    nombre: active_name,
+                    width: `${$("#panel-tab-content").width()}`
+                }
+            }).done(function(response){
+                $("#ensemble_forecast_plot").html(response.ensemble_forecast_plot);  
+                $("#corrected_ensemble_forecast_plot").html(response.corr_ensemble_forecast_plot);
+                $("#forecast-table").html(response.forecast_table);
+                $("#corrected-forecast-table").html(response.corr_forecast_table);
+            })    
+        })
+    </script>
+
+
+
+{% endblock %}

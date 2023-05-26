@@ -1,0 +1,33 @@
+.modal-header {
+    align-items: baseline !important;
+}
+
+
+#panel-modal-label {
+    width: 100% !important;
+}
+
+
+#panel-title-custom {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+#panel-station-information {
+    font-size: 12px;
+}
+
+.svg-container {
+    position: relative !important;
+    width: 100% !important;
+}
+
+.plotly-graph-div {
+    height:100% !important; 
+    width:100% !important;
+}
+
+.row-station {
+    padding-top: 4px;
+    padding-bottom: 3px;
+}

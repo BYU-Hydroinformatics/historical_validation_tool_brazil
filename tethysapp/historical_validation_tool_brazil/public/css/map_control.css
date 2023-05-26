@@ -1,0 +1,88 @@
+.control {
+    height: 710px;
+    width: 300px;
+    background-color: rgba(28, 60, 90, 0.75);
+    padding: 10px;
+}
+
+
+.label-control {
+    font-size: 14px !important;
+    color: #fff;
+    font-weight: bold;
+    padding-bottom: 5px;
+    padding-left: 3px;
+}
+
+.selectize-dropdown .selected {
+    background-color: #1C3C5A;
+    color: #fff;
+}
+
+.selectize-dropdown-content {
+    max-height: 120px !important;
+}
+
+.form-control {
+    font-size: 13px !important;
+}
+
+.alert-panel-checkbox .form-check-label {
+    color: white !important;
+}
+
+.control-group .btn-outline-primary {
+    color: #2E74B4 !important;
+    border-color: #2E74B4 !important;
+    font-size: 13px !important;
+    width: 47% !important;
+}
+
+.control-group .btn-outline-primary:hover {
+    color: #2E74B4 !important;
+    background-color:transparent !important;
+    border-color: #2E74B4 !important;
+    font-size: 13px !important;
+}
+
+.control-group .btn-primary {
+    background-color:#2E74B4 !important;
+    border-color: #2E74B4 !important;
+    font-size: 13px !important;
+    width: 47% !important;
+}
+
+.alert-panel-checkbox {
+    font-size: 13px !important;
+}
+
+
+
+.form-switch #check-000yr:checked {
+    background-color: #2AAD27;
+}
+
+.form-switch #check-002yr:checked {
+    background-color: #FEF001;
+}
+
+.form-switch #check-005yr:checked {
+    background-color: #FD9A01;
+}
+
+.form-switch #check-010yr:checked {
+    background-color: #FF3805;
+}
+
+.form-switch #check-025yr:checked {
+    background-color: #FF0000;
+}
+
+.form-switch #check-050yr:checked {
+    background-color: #80006A;
+}
+
+.form-switch #check-100yr:checked {
+    background-color: #8000F6;
+}
+
